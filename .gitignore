@@ -1,0 +1,31 @@
+# ── 비밀값 ──────────────────────────────────
+*.env
+.secrets.env
+!*.env.example
+
+# ── 개인정보 (민원 통화 녹음·전사·연락처·주소) ──
+**/data/complaints_raw/
+**/data/live_progress.json
+**/*.db
+**/*.db-wal
+**/*.db-shm
+**/data/backups/
+**/kong/logs/
+**/kong/rejected.txt
+**/scripts/dash_allow.txt
+**/scripts/dropped_ips.txt
+
+# ── 용량 (git 에 넣지 않는다) ────────────────
+**/model/
+**/models/
+server/server_piai/A/dataset/
+dataset/voice_saturi/
+dataset/location/
+dataset/faiss/location/          # 100MB 초과 파일 6개 · 합계 3.2GB
+# dataset/faiss/stt_err/ 는 6.8MB 라 포함한다
+
+# ── 생성물 ──────────────────────────────────
+__pycache__/
+*.pyc
+graphify-out/
+.code-review-graph/

@@ -1,0 +1,37 @@
+# requirements.txt — 서버 A/B/UI 가 필요로 하는 패키지 (서버 pod 전용)
+#
+# 이 환경에 원래 없던 것만 적었다. torch·transformers·vllm·fastapi·uvicorn·openai·
+# httpx·numpy 는 이미 깔려 있고, 버전을 바꾸면 vLLM 이 깨지므로 constraints.txt 로
+# 고정한다. 반드시 함께 쓸 것:
+#
+#     pip install -r requirements.txt -c constraints.txt
+#
+# 버전은 constraints 를 걸고 resolve 한 실제 결과다(2026-08 기준). 배포 이미지를
+# 다시 만들 때 같은 조합이 재현되도록 고정했다.
+#
+# ※ 녹취 PC(윈도우) 클라이언트용 requests·watchdog 은 여기 없다 — 서버는 안 쓴다.
+#   kong/client_watch_upload.py 참고.
+
+# ── 서버 A: 파이프라인 ────────────────────────────────────────────────
+langgraph==1.2.11              # app/core/server_graph.py — 상태 그래프
+sentence-transformers==6.0.0   # pipeline_src/core/config.py — ko-sroberta 임베딩
+faiss-cpu==1.15.0              # pipeline_src/core/search.py — 지명·오인식 인덱스
+                               #   GPU 판(faiss-gpu)이 아니라 CPU 판을 쓴다: vLLM 이
+                               #   --tensor-parallel-size 2 --gpu-memory-utilization 0.8 로
+                               #   GPU 2장을 거의 다 잡으므로 faiss 를 GPU 에 올릴 여유가
+                               #   없다. search.py 는 faiss-cpu 면 조용히 CPU 로 동작한다.
+scipy==1.18.0                  # pipeline_src/core/search.py
+silero-vad==6.2.1              # pipeline_src/core/llm.py — 발화 구간 분할(VAD)
+
+# ── 서버 A: 오디오 디코딩 ─────────────────────────────────────────────
+ffmpeg-python==0.2.0           # app/audio/decoder.py
+                               #   ★ 이것만으로는 부족하다. ffmpeg **바이너리**도 필요하다
+                               #     (decoder.py 가 subprocess 로 직접 부른다):
+                               #        apt-get install -y ffmpeg
+
+# ── 서버 B: 저장·웹훅 ─────────────────────────────────────────────────
+SQLAlchemy==2.0.52             # app/db/ — SQLite ORM
+tenacity==9.1.4                # app/core/webhook.py — 웹훅 재시도
+
+# ── 진행상황 UI ───────────────────────────────────────────────────────
+gradio==6.25.0                 # ui/app_ui_live.py

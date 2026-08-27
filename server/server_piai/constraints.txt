@@ -1,0 +1,25 @@
+# constraints.txt — 이미 깔려 있는 스택을 **못 바꾸게** 고정한다.
+#
+# 왜 필요한가: 이 환경은 transformers 5.15.0 / torch 2.13.0 처럼 아주 최신이고,
+# vLLM 0.27.1 이 그 버전에 맞춰 깔려 있다. 새 패키지를 그냥 설치하면 resolver 가
+# sentence-transformers 를 맞추려고 transformers 를 내려버릴 수 있고, 그 순간 vLLM 이
+# 깨진다 (27B 를 못 띄우면 파이프라인 전체가 멈춘다).
+#
+# 사용: pip install -r requirements.txt -c constraints.txt
+#       (install_deps.sh 가 이렇게 부른다)
+#
+# 검증: 이 constraints 를 걸고 --dry-run 을 돌린 결과, 아래 패키지 중 교체되는 것이
+#       하나도 없음을 확인했다. requirements.txt 의 버전들이 그 결과다.
+
+torch==2.13.0
+transformers==5.15.0
+tokenizers==0.22.2
+vllm==0.27.1
+numpy==2.3.5
+fastapi==0.136.3
+starlette==1.6.0
+uvicorn==0.52.3
+pydantic==2.13.4
+openai==3.2.0
+httpx==0.28.1
+safetensors==0.8.0
